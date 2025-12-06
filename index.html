@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>hahaha</title>
+  <style>
+    :root{--bg:#0f172a;--accent:#ff4d4f}
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial}
+    .wrap{min-height:100%;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,#071126 0%, #0b2540 100%);color:#fff;padding:32px;box-sizing:border-box}
+    .card{background:rgba(255,255,255,0.03);padding:28px;border-radius:12px;box-shadow:0 8px 30px rgba(2,6,23,0.6);text-align:center;max-width:760px;width:100%}
+    a.launch{display:inline-block;padding:12px 20px;border-radius:10px;background:linear-gradient(90deg,var(--accent),#ff7a7a);color:#111;text-decoration:none;font-weight:700;box-shadow:0 6px 18px rgba(255,77,79,0.24)}
+
+    /* Modal / fullscreen preview */
+    .modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(2,6,23,0.6);backdrop-filter:blur(6px);opacity:0;pointer-events:none;transition:opacity .25s ease}
+    .modal.open{opacity:1;pointer-events:auto}
+    .content{position:relative;border-radius:14px;overflow:hidden;max-width:95vw;max-height:95vh;box-shadow:0 20px 60px rgba(2,6,23,0.7)}
+    .img{display:block;width:100%;height:100%;object-fit:cover;background:#111}
+    .overlay-text{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
+    .overlay-text h1{margin:0;font-size:clamp(28px,7vw,96px);letter-spacing:2px;color:#fff;text-shadow:0 6px 20px rgba(0,0,0,0.6)}
+    .close-btn{position:absolute;right:12px;top:12px;background:rgba(0,0,0,0.5);border:0;color:#fff;padding:8px 10px;border-radius:8px;cursor:pointer;font-weight:700}
+
+    /* small note */
+    .hint{margin-top:12px;color:rgba(255,255,255,0.6);font-size:14px}
+
+    @media (max-width:520px){.card{padding:18px}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h2></h2>
+      <p></p>
+      <p style="margin-top:18px"><a href="#" id="openLink" class="launch">Klik tampilkan gambar</a></p>
+      <p class="hint"> <strong></strong></p>
+    </div>
+  </div>
+
+  <!-- Modal yang menampilkan image (SVG dibuat dinamis sehingga file ini self-contained) -->
+  <div id="modal" class="modal" role="dialog" aria-hidden="true">
+    <div class="content" id="content">
+      <button class="close-btn" id="closeBtn" aria-label="Tutup">Close</button>
+      <img id="previewImg" class="img" alt="Gambar: GAS GAK?" />
+      <div class="overlay-text"><h1>INFOO KEGIATAN</h1></div>
+    </div>
+  </div>
+
+  <script>
+    // Buat SVG sebagai data URL agar file ini self-contained.
+    function makeSVGDataURL(){
+      const svg = `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns='http://www.w3.org/2000/svg' width='1600' height='900' viewBox='0 0 1600 900'>
+  <defs>
+    <linearGradient id='g' x1='0' x2='1' y1='0' y2='1'>
+      <stop offset='0' stop-color='#ff5f6d'/>
+      <stop offset='1' stop-color='#ffc371'/>
+    </linearGradient>
+    <filter id='grain'>
+      <feTurbulence baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/>
+      <feColorMatrix type='saturate' values='0'/>
+      <feBlend mode='overlay'/>
+    </filter>
+  </defs>
+  <rect width='100%' height='100%' fill='url(#g)' />
+  <!-- pattern -->
+  <g opacity='0.06'>
+    <circle cx='1200' cy='200' r='220' fill='#ffffff'/>
+    <circle cx='300' cy='700' r='320' fill='#ffffff'/>
+  </g>
+  <!-- big text inside SVG as decorative element (overlay will also show text) -->
+  <text x='50%' y='50%' font-size='220' font-family='Segoe UI, Roboto, Arial' text-anchor='middle' dominant-baseline='middle' fill='rgba(255,255,255,0.07)'>GAS GAK?</text>
+</svg>`;
+      return 'data:image/svg+xml;charset=utf8,' + encodeURIComponent(svg);
+    }
+
+    const modal = document.getElementById('modal');
+    const openLink = document.getElementById('openLink');
+    const closeBtn = document.getElementById('closeBtn');
+    const previewImg = document.getElementById('previewImg');
+
+    openLink.addEventListener('click', function(e){
+      e.preventDefault();
+      // set src ke data URL SVG
+      previewImg.src = makeSVGDataURL();
+      modal.classList.add('open');
+      modal.setAttribute('aria-hidden','false');
+    });
+
+    // Tutup ketika klik latar luar atau tombol close
+    modal.addEventListener('click', function(e){
+      if (e.target === modal || e.target === closeBtn) closeModal();
+    });
+
+    function closeModal(){
+      modal.classList.remove('open');
+      modal.setAttribute('aria-hidden','true');
+      // kosongkan src agar tidak tetap memori
+      setTimeout(()=> previewImg.src = '', 300);
+    }
+
+    // Esc untuk menutup
+    window.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeModal(); });
+  </script>
+</body>
+</html>
